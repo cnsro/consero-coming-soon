@@ -70,9 +70,9 @@ export default function ComingSoonPage() {
           CONSERO
         </h1>
 
-        <h2 className="text-2xl md:text-3xl font-light tracking-wider uppercase text-gray-700">
+        <h3 className="text-2xl md:text-3xl font-light tracking-wider uppercase text-gray-700">
           Coming Soon
-        </h2>
+        </h3>
 
         <p className="mt-6 text-base md:text-lg text-gray-600 max-w-md mx-auto">
           Timeless menswear, crafted for the modern gentleman.
