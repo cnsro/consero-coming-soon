@@ -70,7 +70,7 @@ export default function ComingSoonPage() {
           CONSERO
         </h1>
 
-        <h2 className="text-[26px] md:text-[30px] font-light tracking-wider uppercase text-gray-700">
+        <h2 className="text-[22px] md:text-[26px] font-light tracking-wider uppercase text-gray-700">
           Coming Soon
         </h2>
 
