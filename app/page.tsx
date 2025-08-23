@@ -1,103 +1,144 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState } from 'react';
+import jsonp from 'jsonp';
+
+export default function ComingSoonPage() {
+  // 1. Add state for the first name
+  const [firstName, setFirstName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus('loading');
+    setMessage('');
+
+    // 3. Add validation for the required First Name field
+    if (!firstName || !email || email.indexOf('@') === -1) {
+      setStatus('error');
+      setMessage('Please fill out all required fields.');
+      return;
+    }
+
+    // 4. Add the FNAME parameter to the Mailchimp URL
+    const mailchimpUrl = `https://outlook.us7.list-manage.com/subscribe/post-json?u=50326e63a83633d2dd9cc9ff3&id=3e53e613d1&FNAME=${encodeURIComponent(firstName)}&EMAIL=${encodeURIComponent(email)}&PHONE=${encodeURIComponent(phone)}&c=?`;
+    
+    jsonp(mailchimpUrl, { param: 'c', timeout: 3500 }, (err, data) => {
+      if (err && err.message === 'Timeout') {
+        setStatus('success');
+        setMessage("Thank you! You're on the list.");
+        // 5. Clear the first name input on success
+        setFirstName('');
+        setEmail('');
+        setPhone('');
+      } 
+      else if (data && data.result === 'success') {
+        setStatus('success');
+        setMessage("Thank you! You're on the list.");
+        setFirstName('');
+        setEmail('');
+        setPhone('');
+      } 
+      else if (data && data.result === 'error') {
+        setStatus('error');
+        let errorMessage = data.msg || 'An error occurred.';
+        if (errorMessage.includes('is already subscribed')) {
+          errorMessage = "You're already on the list!";
+        } else {
+          errorMessage = "An error occurred. Please try again.";
+        }
+        setMessage(errorMessage);
+      } 
+      else {
+        setStatus('error');
+        setMessage('An unexpected error occurred. Please try again later.');
+      }
+    });
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <main className="flex flex-col items-center justify-center min-h-screen bg-white text-black p-6 font-sans">
+      <div className="text-center max-w-lg w-full">
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <h1
+          className="text-5xl md:text-6xl mb-4"
+          style={{ fontFamily: "'Cormorant Garamond', serif" }}
+        >
+          CONSERO
+        </h1>
+
+        <h2 className="text-2xl md:text-3xl font-light tracking-wider uppercase text-gray-700">
+          Coming Soon
+        </h2>
+
+        <p className="mt-6 text-base md:text-lg text-gray-600 max-w-md mx-auto">
+          Timeless menswear, crafted for the modern gentleman.
+          Be the first to know when our collection arrives.
+        </p>
+        
+        <form onSubmit={handleSubmit} className="mt-8 flex flex-col items-center justify-center gap-4 w-full max-w-sm mx-auto">
+          
+          {/* 2. Add the new First Name input field (required) */}
+          <label htmlFor="firstName" className="sr-only">First Name</label>
+          <input
+            type="text"
+            id="firstName"
+            name="FNAME"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="First name"
+            className="bg-transparent border border-gray-400 text-black placeholder-gray-500 text-center text-sm w-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gray-600 transition-all duration-300"
+            required
+            disabled={status === 'loading'}
+          />
+
+          <label htmlFor="email" className="sr-only">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            name="EMAIL"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email address"
+            className="bg-transparent border border-gray-400 text-black placeholder-gray-500 text-center text-sm w-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gray-600 transition-all duration-300"
+            required
+            disabled={status === 'loading'}
+          />
+
+          <label htmlFor="phone" className="sr-only">Phone Number</label>
+          <input
+            type="tel"
+            id="phone"
+            name="PHONE"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="Phone number (optional)"
+            className="bg-transparent border border-gray-400 text-black placeholder-gray-500 text-center text-sm w-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gray-600 transition-all duration-300"
+            disabled={status === 'loading'}
+          />
+
+          <button
+            type="submit"
+            className="bg-black text-white font-semibold text-sm w-full px-8 py-3 border border-black hover:bg-transparent hover:text-black transition-all duration-300 uppercase tracking-wider disabled:opacity-50"
+            disabled={status === 'loading'}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+            {status === 'loading' ? 'Submitting...' : 'Notify Me'}
+          </button>
+        </form>
+
+        {message && (
+          <p className={`mt-4 text-sm ${status === 'error' ? 'text-red-600' : 'text-gray-700'}`}>
+            {message}
+          </p>
+        )}
+      </div>
+
+      <footer className="absolute bottom-6 text-xs text-gray-500">
+        &copy; {new Date().getFullYear()} Consero. All Rights Reserved.
       </footer>
-    </div>
+    </main>
   );
 }
