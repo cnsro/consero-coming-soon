@@ -3,7 +3,7 @@
 import type { Metadata } from 'next';
 import { Inter, Cormorant_Garamond } from 'next/font/google';
 import './globals.css';
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next"; // This import is correct!
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -30,7 +30,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${cormorant.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Analytics /> {/* <-- Add this line here */}
+      </body>
     </html>
   );
 }
