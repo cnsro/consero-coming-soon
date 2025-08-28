@@ -75,7 +75,7 @@ export default function ComingSoonPage() {
         </h2>
 
         <p className="mt-6 text-base md:text-lg text-gray-600 max-w-md mx-auto">
-          Timeless menswear, crafted for the modern gentleman.
+          Timeless menswear, crafted for the modern and the classic gentleman.
           Be the first to know when our collection arrives.
         </p>
         
